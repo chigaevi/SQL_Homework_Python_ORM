@@ -79,17 +79,9 @@ def get_DB_data():
     DB_name = data_list[2]
     host = data_list[3]
 
-def get_DB_pas():
-    global DB_pas
-    with open('DB_pas.txt','r') as file_DB_pas:
-        DB_pas = file_DB_pas.read().strip()
-
-
 # создаем движок
-
 get_DB_data()
-get_DB_pas()
-
+DB_pas = os.getenv('PAS')
 DSN = f"{DB}://{DB_login}:{DB_pas}@{host}/{DB_name}"
 engine = sqlalchemy.create_engine(DSN)
 # создаем таблицы
@@ -110,3 +102,4 @@ publisher_inf(name=name_pub)
 
 
 session.close()
+
