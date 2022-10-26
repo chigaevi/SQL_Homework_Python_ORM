@@ -68,7 +68,7 @@ def get_DB_data():
     global DB
     global DB_login
     global DB_name
-    global host
+    global DB_host
     with open('DB_data.txt','r') as file_DB_data:
         DB_data = file_DB_data.read().strip('\n')
         data_list = []
@@ -77,12 +77,12 @@ def get_DB_data():
     DB = data_list[0]
     DB_login = data_list[1]
     DB_name = data_list[2]
-    host = data_list[3]
+    DB_host = data_list[3]
 
 # создаем движок
 get_DB_data()
 DB_pas = os.getenv('PAS')
-DSN = f"{DB}://{DB_login}:{DB_pas}@{host}/{DB_name}"
+DSN = f"{DB}://{DB_login}:{DB_pas}@{DB_host}/{DB_name}"
 engine = sqlalchemy.create_engine(DSN)
 # создаем таблицы
 create_tables(engine)
