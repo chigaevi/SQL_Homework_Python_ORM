@@ -1,0 +1,4 @@
+postgresql
+postgres
+book_shop_db
+localhost:5432
