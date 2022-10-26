@@ -1,3 +1,4 @@
+import os
 import sqlalchemy
 import psycopg2
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
@@ -8,6 +9,8 @@ class publisher(Base):
     __tablename__ = 'publisher'
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     name = sqlalchemy.Column(sqlalchemy.String(length=60), unique=True)
+    def __str__(self):
+        return f'id: {self.id}, name: {self.name}'
 
 class book(Base):
     __tablename__ = 'book'
@@ -41,7 +44,7 @@ class sale(Base):
 
 
 def create_tables(engine):
-    Base.metadata.drop_all(engine)
+    # Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
 
 def add_publishers(names): #принимает на вход список
@@ -52,10 +55,42 @@ def add_publishers(names): #принимает на вход список
     print('Publisher(s) added')
 
 def publisher_inf(id=None,name=None):
+    if id is not None:
+        pubs_inf = session.query(publisher).filter(publisher.id == id)
+        for pub_inf in pubs_inf:
+            print(pub_inf)
+    elif name is not None:
+        pubs_inf = session.query(publisher).filter(publisher.name == name)
+        for pub_inf in pubs_inf:
+            print(pub_inf)
+
+def get_DB_data():
+    global DB
+    global DB_login
+    global DB_name
+    global host
+    with open('DB_data.txt','r') as file_DB_data:
+        DB_data = file_DB_data.read().strip('\n')
+        data_list = []
+        for data in DB_data.split('\n'):
+            data_list.append(data)
+    DB = data_list[0]
+    DB_login = data_list[1]
+    DB_name = data_list[2]
+    host = data_list[3]
+
+def get_DB_pas():
+    global DB_pas
+    with open('DB_pas.txt','r') as file_DB_pas:
+        DB_pas = file_DB_pas.read().strip()
 
 
 # создаем движок
-DSN = "postgresql://postgres:treeWQ1846VjJ@localhost:5432/book_shop_db"
+
+get_DB_data()
+get_DB_pas()
+
+DSN = f"{DB}://{DB_login}:{DB_pas}@{host}/{DB_name}"
 engine = sqlalchemy.create_engine(DSN)
 # создаем таблицы
 create_tables(engine)
@@ -64,9 +99,14 @@ Session = sessionmaker(bind=engine)
 session = Session()
 
 #добавляем publishers в БД
-names_pub = input('Введите издателя или издателей через запятую: ').split(',')  #для ввода - Elsevier,Bertelsmann,Pearson plc
-add_publishers(names_pub)
+#для ввода - Elsevier,Bertelsmann,Pearson plc
+# add_names_pub = input('Введите издателя или издателей через запятую: ').split(',')
+# add_publishers(add_names_pub)
 
+id_pub = input('Введите ID издателя: ')
+publisher_inf(id=id_pub)
+name_pub = input('Введите издателя: ')
+publisher_inf(name=name_pub)
 
 
 session.close()
